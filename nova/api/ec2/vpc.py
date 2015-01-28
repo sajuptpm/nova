@@ -980,7 +980,7 @@ class VpcController(object):
 
         # find the route
         foundRoute = False
-        for route in route_table['routes']:
+        for route in route_table['routes']['route']:
             if route['prefix'] == cidr:
                 route['next_hop'] = next_hop
                 route['next_hop_type'] = next_hop_type
@@ -991,10 +991,10 @@ class VpcController(object):
             route = {'prefix': cidr,
                      'next_hop': next_hop,
                      'next_hop_type': next_hop_type}
-            route_table['routes'].append(route)
+            route_table['routes']['route'].append(route)
 
         # add route to the route table
-        route_dict = {'route': route_table['routes']}
+        route_dict = {'route': route_table['routes']['route']}
         req = {'routes': route_dict}
         try:
             route_rsp = neutron.update_route_table(route_table['id'],
