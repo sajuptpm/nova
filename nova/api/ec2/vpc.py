@@ -683,6 +683,7 @@ class VpcController(object):
         except kc.ClientException as e:
             raise exception.InvalidRequest(e)
 
+        subnet_ids = kwargs.get("subnet_id")
         # fetch network list
         vpc_id = self._get_vpcid_from_context(context)
         neutron = neutronv2.get_client(context)
@@ -695,6 +696,9 @@ class VpcController(object):
         subnets = []
         for network in network_rsp['networks']:
             if not network['name'].startswith('subnet-'):
+                continue
+
+            if subnet_ids and network['name'] not in subnet_ids:
                 continue
 
             if (vpc_id != self._get_vpcid_from_tenantid(network['tenant_id'],
