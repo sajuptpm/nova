@@ -1780,8 +1780,13 @@ class VpcController(object):
     def vpc_describe_addresses(self, context, kwargs):
         neutron = neutronv2.get_client(context)
         floatings = neutron.list_floatingips(tenant_id=context.project_id)
-        addresses = [self.vpc_format_address(
-            context, f, neutron) for f in floatings['floatingips']]
+        allocation_ids = kwargs.get('allocation_id')
+        addresses = []
+        for floatingip in floatings['floatingips']:
+            address = self.vpc_format_address(context, floatingip, neutron)
+            if allocation_ids and address['allocation_id'] not in allocation_ids:
+                continue
+            addresses.append(address)
         return {'addressesSet': addresses}
 
     def create_internet_gateway(self, context):
